@@ -4,7 +4,8 @@ import { Layout } from 'antd';
 import MovieList from './page/MovieList';
 import MovieDetail from './page/MovieDetails';
 import SearchResults from './page/SearchResults';
-import SearchBar from './component/SearchBar'
+import SearchBar from './component/SearchBar';
+import GenreSearch from './page/GenreList';
 import { Content, Footer, Header } from 'antd/es/layout/layout';
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
             <Route path="/" element={<MovieList />} />
             <Route path="/movies/:movieId" element={<MovieDetail />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/genre/:genreId" element={<GenreSearch />} />
           </Routes>
         </Content>
         <Footer>
