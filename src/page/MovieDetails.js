@@ -1,31 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import './MovieDetails.css';
 
 const MovieDetail = () => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:8000/api/movies/${movieId}/`)
-      .then(response => {
+    axios
+      .get(`http://localhost:8000/api/movies/${movieId}/`)
+      .then((response) => {
         setMovie(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error fetching movie details:', error);
       });
   }, [movieId]);
 
   if (!movie) {
-    return <p>Loading...</p>;
+    return <div className="movie-detail-loading">Loading...</div>;
   }
 
   return (
-    <div>
-      <h1>{movie.title} ({movie.year})</h1>
-      <img src={movie.poster} alt={movie.title} />
-      <p>Rating: {movie.rating}</p>
-      <p>{movie.overview}</p>
+    <div className="movie-detail">
+      <div className="movie-poster">
+        <img src={movie.poster} alt={movie.title} />
+      </div>
+      <div className="movie-info">
+        <h1 className="movie-title">
+          {movie.title} <span className="movie-year">({movie.year})</span>
+        </h1>
+        <p className="movie-rating">
+          <strong>Rating:</strong> {movie.rating}/10
+        </p>
+        <p className="movie-overview">{movie.overview}</p>
+      </div>
     </div>
   );
 };
