@@ -10,9 +10,8 @@ const MovieList = () => {
     return savedSelections ? JSON.parse(savedSelections) : [];
   });
   const [recommendations, setRecommendations] = useState([]);
-  const debounceTimer = useRef(null); // For debouncing backend calls
+  const debounceTimer = useRef(null);
 
-  // Fetch movie categories on load
   useEffect(() => {
     axios
       .get('http://localhost:8000/api/movies/')
@@ -47,7 +46,7 @@ const MovieList = () => {
     }
     debounceTimer.current = setTimeout(() => {
       fetchRecommendations();
-    }, 10000); // 10 seconds debounce
+    }, 5000); // 5 seconds debounce
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMovies]);
 
@@ -71,7 +70,7 @@ const MovieList = () => {
     axios
       .post('http://localhost:8000/api/recommendation/', {
         titles: selectedTitles,
-        top_n: 10,
+        top_n: 4,
       })
       .then((response) => {
         const recommendedMovies = response.data;
@@ -108,7 +107,6 @@ const MovieList = () => {
           <div className="movie-row">
             {movies.map((movie) => (
               <div key={movie.id} className="movie-card">
-                {/* Heart Button */}
                 <button
                   className={`heart-button ${selectedMovies.some((m) => m.id === movie.id) ? "selected" : ""}`}
                   onClick={() => toggleSelectMovie(movie)}

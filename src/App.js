@@ -12,7 +12,6 @@ const App = () => {
 
   const [selectedMovies, setSelectedMovies] = useState([]);
 
-  // Load initial state from localStorage
   useEffect(() => {
     const storedMovies = localStorage.getItem('selectedMovies');
     if (storedMovies) {
@@ -20,7 +19,6 @@ const App = () => {
     }
   }, []);
 
-  // Save to localStorage whenever selectedMovies changes
   useEffect(() => {
     localStorage.setItem('selectedMovies', JSON.stringify(selectedMovies));
   }, [selectedMovies]);
