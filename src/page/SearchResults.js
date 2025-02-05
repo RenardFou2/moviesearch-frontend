@@ -3,7 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import './SearchResults.css';
 
-const SearchResults = ({selectedMovies, addMovieToSelection, removeMovieFromSelection }) => {
+const SearchResults = () => {
   const [movies, setMovies] = useState([]);
   const location = useLocation();
   const query = new URLSearchParams(location.search).get('query');

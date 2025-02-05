@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './MovieList.css';
+import WelcomeModal from '../component/WelcomeModal';
 
 const MovieList = () => {
   const [categories, setCategories] = useState({});
@@ -11,6 +12,8 @@ const MovieList = () => {
   });
   const [recommendations, setRecommendations] = useState([]);
   const debounceTimer = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios
@@ -67,6 +70,9 @@ const MovieList = () => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
+
     axios
       .post('http://localhost:8000/api/recommendation/', {
         titles: selectedTitles,
@@ -79,28 +85,39 @@ const MovieList = () => {
       })
       .catch((error) => {
         console.error("Error fetching recommendations:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   const toggleSelectMovie = (movie) => {
     setSelectedMovies((prevSelectedMovies) => {
-      const exists = prevSelectedMovies.find((m) => m.id === movie.id);
-      if (exists) {
-        return prevSelectedMovies.filter((m) => m.id !== movie.id);
-      } else {
-        return [...prevSelectedMovies, movie];
-      }
+      const exists = prevSelectedMovies.some((m) => m.id === movie.id);
+      return exists
+        ? prevSelectedMovies.filter((m) => m.id !== movie.id)
+        : [...prevSelectedMovies, movie];
     });
   };
 
   const mergedCategories = {
-    ...(selectedMovies.length > 0 && { "Selected Movies": selectedMovies }),
+    ...(selectedMovies.length > 0 && { "Favourite movies": selectedMovies }),
     ...(recommendations.length > 0 && { "Recommended For You": recommendations }),
     ...categories,
   };
 
   return (
     <div className="movie-list">
+
+      <WelcomeModal /> 
+
+      <div className={`loading-container ${loading ? "show" : ""}`}>
+      <div className="spinner"></div>
+        <p>Fetching recommendations...</p>
+      </div>
+
+      {error && <p className={`error-message ${error ? "show" : ""}`}>{error}</p>}
+
       {Object.entries(mergedCategories).map(([categoryName, movies]) => (
         <div key={categoryName}>
           <h2 className="movie-category-title">{categoryName.replace('_', ' ').toUpperCase()}</h2>
@@ -108,12 +125,11 @@ const MovieList = () => {
             {movies.map((movie) => (
               <div key={movie.id} className="movie-card">
                 <button
-                  className={`heart-button ${selectedMovies.some((m) => m.id === movie.id) ? "selected" : ""}`}
-                  onClick={() => toggleSelectMovie(movie)}
+                className={`heart-button ${selectedMovies.some((m) => m.id === movie.id) ? "selected" : ""}`}
+                onClick={() => toggleSelectMovie(movie)}
                 >
                   {selectedMovies.some((m) => m.id === movie.id) ? "❤️" : "🤍"}
                 </button>
-
                 <Link to={`/movies/${movie.id}`}>
                   <img
                     src={movie.poster}
