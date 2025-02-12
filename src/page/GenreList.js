@@ -5,8 +5,13 @@ import axios from 'axios';
 const GenreSearch = () => {
   const { genreId } = useParams();
   const [movies, setMovies] = useState([]);
+  const [selectedMovies, setSelectedMovies] = useState(() => {
+      const savedSelections = localStorage.getItem('selectedMovies');
+      return savedSelections ? JSON.parse(savedSelections) : [];
+  });
 
   useEffect(() => {
+    localStorage.setItem('selectedMovies', JSON.stringify(selectedMovies));
     const fetchMovies = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/genre-search/`, {
@@ -18,7 +23,17 @@ const GenreSearch = () => {
       }
     };
     fetchMovies();
-  }, [genreId]);
+  }, [genreId, selectedMovies]);
+
+  const toggleSelectMovie = (movie) => {
+    setSelectedMovies((prevSelectedMovies) => {
+      const exists = prevSelectedMovies.some((m) => m.id === movie.id);
+      return exists
+        ? prevSelectedMovies.filter((m) => m.id !== movie.id)
+        : [...prevSelectedMovies, movie];
+    });
+  };
+
 
   return (
     <div className="search-results">
@@ -26,12 +41,22 @@ const GenreSearch = () => {
         <div className="movie-grid">
           {movies.map(movie => (
             <div key={movie.id} className="movie-card">
+              <button
+              className={`heart-button ${selectedMovies.some((m) => m.id === movie.id) ? "selected" : ""}`}
+              onClick={() => toggleSelectMovie(movie)}
+              >
+                {selectedMovies.some((m) => m.id === movie.id) ? "❤️" : "🤍"}
+              </button>
               <Link to={`/movies/${movie.id}`}>
-                <img src={movie.poster} alt={movie.title} className="movie-poster" />
+                <img
+                  src={movie.poster}
+                  alt={movie.title}
+                  className="movie-poster"
+                />
               </Link>
               <h4 className="movie-title">{movie.title}</h4>
-              <p className="movie-rating">Rating: {movie.rating}</p>
-              <p className="movie-year">{movie.year}</p>
+              <p className="movie-info">Rating: {movie.rating}</p>
+              <p className="movie-info">{movie.year}</p>
             </div>
           ))}
         </div>

@@ -59,7 +59,6 @@ const MovieList = () => {
       setRecommendations([]);
       return;
     }
-
     const selectedTitles = selectedMovies.map((movie) => movie.title);
     const cacheKey = selectedTitles.sort().join(",").toLowerCase();
 
