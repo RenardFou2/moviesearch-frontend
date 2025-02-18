@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { HeartOutlined, HeartFilled} from '@ant-design/icons';
 import axios from 'axios';
 
 const GenreSearch = () => {
@@ -45,7 +46,7 @@ const GenreSearch = () => {
               className={`heart-button ${selectedMovies.some((m) => m.id === movie.id) ? "selected" : ""}`}
               onClick={() => toggleSelectMovie(movie)}
               >
-                {selectedMovies.some((m) => m.id === movie.id) ? "❤️" : "🤍"}
+                {selectedMovies.some((m) => m.id === movie.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined style={{ color: 'white' }} />}
               </button>
               <Link to={`/movies/${movie.id}`}>
                 <img
