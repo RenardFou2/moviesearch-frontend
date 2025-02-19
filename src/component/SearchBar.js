@@ -36,6 +36,10 @@ const SearchBar = () => {
     navigate(`/genre/${genreId}`);
   };
 
+  const handleHomeButton = (e) => {
+    navigate(`/`);
+  };
+
   return (
     <div className="navbar">
       <Menu mode="horizontal" theme="dark" onClick={handleMenuClick} className="genre-menu">
@@ -45,7 +49,11 @@ const SearchBar = () => {
           ))}
         </SubMenu>
       </Menu>
-  
+
+      <Button type="primary" onClick={handleHomeButton} className="home-button">
+        Home
+      </Button>
+
       <div className="search-container">
         <Input
           placeholder="Search for a movie..."

@@ -3,12 +3,13 @@ import axios from 'axios';
 import LoadingSpinner from '../component/LoadingSpinner';
 import { useParams } from 'react-router-dom';
 import { HeartOutlined, HeartFilled, LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Carousel } from 'antd';
 import './MovieDetails.css';
 
 const MovieDetail = () => {
   const { movieId } = useParams();
   const [movie, setMovie] = useState(null);
+  const [backdrops, setBackdrops] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedMovies, setSelectedMovies] = useState(() => {
@@ -31,9 +32,13 @@ const MovieDetail = () => {
         console.error('Error fetching movie details:', error);
         setIsLoading(false);
       });
-    
-    localStorage.setItem('selectedMovies', JSON.stringify(selectedMovies));
-  }, [movieId, selectedMovies]);
+  }, [movieId]);
+  
+  useEffect(() => {
+    if (movie && movie.backdrops && movie.backdrops.length > 0) {
+      setBackdrops(movie.backdrops);
+    }
+  }, [movie]);
   
   const toggleSelectMovie = (movie) => {
     setSelectedMovies((prevSelectedMovies) => {
@@ -53,26 +58,27 @@ const MovieDetail = () => {
   };
 
   const handleDislike = () => {
-    
+    console.log("Movie Data:", movie);
     const newStatus = likedStatus === false ? null : false;
     setLikedStatus(newStatus);
     localStorage.setItem(`liked_${movieId}`, JSON.stringify(newStatus));
     
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!movie) {
-    return <div className="movie-detail-loading">Loading...</div>;
-  }
+  if (isLoading) return <LoadingSpinner />;
+  if (!movie) return <div className="movie-detail-loading">Loading...</div>;
 
   return (
     <div className="movie-detail">
-      <div className="movie-poster">
-        <img src={movie.poster} alt={movie.title} />
-      </div>
+      {backdrops.length > 0 && (
+      <Carousel autoplay className="movie-carousel" key={backdrops.join('')}>
+        {backdrops.map((imgUrl, index) => (
+          <div key={index} className="carousel-slide">
+            <img src={imgUrl} alt={`Backdrop ${index}`} className="carousel-image" />
+          </div>
+        ))}
+      </Carousel>
+      )}
       <div className="movie-info">
         <h1 className="movie-title">
           {movie.title} <span className="movie-year">({movie.year})</span>
